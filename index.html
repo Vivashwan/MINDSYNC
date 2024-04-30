@@ -2,22 +2,34 @@
 <html lang="en">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Memory Game</title>
-  
+    <title>Synth</title>
+    <link rel="shortcut icon" type="x-icon" href="TabIcon.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"rel="stylesheet"/>
 
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+      <button id="btn">
+        <img src="./icons/fullScreen.png">
+      </button>
 
+      <video id="background-video" autoplay loop muted>
+        <source src="./backgroundVideo/RedNight.mp4" type="video/mp4">
+      </video>
+      
       <div class="wrapper">
 
         <div class="stats-container">
-
           <div id="moves-count"> </div>
           <div id="time"> </div>
-
         </div>
+
+        <!-- <select id="difficulty-select">
+          <option value="easy">Easy</option>
+          <option value="medium" selected>Medium</option>
+          <option value="hard">Hard</option>
+        </select> -->
+
 
         <div class="game-container"></div>
         <button id="stop" class="hide">Stop Game</button>
@@ -25,8 +37,8 @@
       </div>
 
       <div class="muteButton">
-          <button id="muteButton">
-            <img src="./icons/mute.png" alt="Mute">
+          <button id="muteB">
+              <img src="./icons/pauseSquared32.png">
           </button>
       </div>
 

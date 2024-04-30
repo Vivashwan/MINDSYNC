@@ -6,13 +6,14 @@ const gameContainer = document.querySelector(".game-container");
 const result = document.getElementById("result");
 const controls = document.querySelector(".controls-container");
 
-// Get the mute button element
-const muteButton = document.getElementById("muteButton");
+const muteButton = document.getElementById("muteB");
+let isMuted = false;
 
 let cards;
 let interval;
 let firstCard = false;
 let secondCard = false;
+let currentlyPlayingAudio;
 
 //Items array
 const items = [
@@ -53,17 +54,60 @@ const items = [
 ];
 
 const music = [
+  { name: "AmbientPiano", url: "./backgroundMusic/AmbientPiano.mp3" },
+  { name: "Easter", url: "./backgroundMusic/Easter.mp3" },
   { name: "ForestWalk", url: "./backgroundMusic/ForestWalk.mp3" },
+  { name: "Loneliness", url: "./backgroundMusic/Loneliness.mp3" },
+  { name: "Midnight", url: "./backgroundMusic/Midnight.mp3" },
   { name: "Moment", url: "./backgroundMusic/Moment.mp3" },
+  { name: "MountainBanjo", url: "./backgroundMusic/MountainBanjo.mp3" },
   { name: "OutOfTime", url: "./backgroundMusic/OutOfTime.mp3" },
+  { name: "Peaceful", url: "./backgroundMusic/Peaceful.mp3" },
   { name: "PerfectBeauty", url: "./backgroundMusic/PerfectBeauty.mp3" },
   { name: "Permafrost", url: "./backgroundMusic/Permafrost.mp3" },
-  { name: "PulsarRetroPop", url: "./backgroundMusic/PulsarRetroPop.mp3" },
   { name: "Relaxing", url: "./backgroundMusic/Relaxing.mp3" },
+  { name: "SadAmbientPiano", url: "./backgroundMusic/SadAmbientPiano.mp3" },
   { name: "SunsetLandscape", url: "./backgroundMusic/SunsetLandscape.mp3" },
-  { name: "WalkAround", url: "./backgroundMusic/WalkAround.mp3" },
-  { name: "WondrousWaters", url: "./backgroundMusic/WondrousWaters.mp3" },
+  { name: "TableTop", url: "./backgroundMusic/TableTop.mp3" },
+  { name: "WhenItRains", url: "./backgroundMusic/WhenItRains.mp3" },
+  { name: "WindTroubles", url: "./backgroundMusic/WindTroubles.mp3" },
+  // { name: "WondrousWaters", url: "./backgroundMusic/WondrousWaters.mp3" },
 ];
+
+// const DIFFICULTY = {
+//   EASY: "easy",
+//   MEDIUM: "medium",
+//   HARD: "hard",
+// };
+
+// // Define grid sizes for each difficulty level
+// const GRID_SIZES = {
+//   [DIFFICULTY.EASY]: { rows: 5, cols: 5 },
+//   [DIFFICULTY.MEDIUM]: { rows: 6, cols: 10 },
+//   [DIFFICULTY.HARD]: { rows: 8, cols: 12 },
+// };
+
+function toggleMute() {
+  // Toggle the mute state
+  isMuted = !isMuted;
+
+  // Update the button image based on mute state
+  if (isMuted) {
+    muteButton.innerHTML = '<img src="./icons/playSquared32.png">'; // Display muted speaker emoji
+  } else {
+    muteButton.innerHTML = '<img src="./icons/pauseSquared32.png">'; // Display speaker emoji
+  }
+
+  // If music is currently playing, pause it
+  if (currentlyPlayingAudio) {
+    if (isMuted) {
+      currentlyPlayingAudio.pause();
+    } else {
+      // If music is muted, play it
+      currentlyPlayingAudio.play();
+    }
+  }
+}
 
 // Function to play music
 function playMusic() {
@@ -73,6 +117,8 @@ function playMusic() {
 
   // Play the selected music
   audio.play();
+
+  currentlyPlayingAudio = audio;
 
   // Automatically play the next song when the current song ends
   audio.addEventListener("ended", function () {
@@ -87,15 +133,27 @@ function playMusic() {
     // Create a new Audio element for the next song and play it
     const nextMusic = music[nextIndex];
     const nextAudio = new Audio(nextMusic.url);
+
     nextAudio.play();
+
+    // Set currentlyPlayingAudio to the next audio element
+    currentlyPlayingAudio = nextAudio;
 
     // Remove the event listener to prevent multiple event bindings
     audio.removeEventListener("ended", arguments.callee);
   });
 }
 
+function stopMusic() {
+  if (currentlyPlayingAudio) {
+    currentlyPlayingAudio.pause();
+    currentlyPlayingAudio = null;
+  }
+}
+
 // Event listener for the "Start Game" button
 startButton.addEventListener("click", () => {
+  stopMusic();
   playMusic();
 });
 
@@ -103,12 +161,17 @@ function playMatchSound() {
   const matchAudio = new Audio("./gameSounds/MarimbaBloop.mp3");
   matchAudio.play();
 }
-
-function toggleMute() {
-  // Loop through all audio elements and toggle their mute state
-  document.querySelectorAll("audio").forEach((audio) => {
-    audio.muted = !audio.muted;
-  });
+function playWinSound() {
+  const playWinSound1 = new Audio("./gameSounds/LevelPassed.mp3");
+  playWinSound1.play();
+}
+function lostGame() {
+  const lostGameSound = new Audio("./gameSounds/NegativeBeeps.mp3");
+  lostGameSound.play();
+}
+function clickSound() {
+  const clickSoundAny = new Audio("./gameSounds/InfographicPop.mp3");
+  clickSoundAny.play();
 }
 
 let movesCount = 0,
@@ -119,6 +182,7 @@ const timeGenerator = () => {
   if (minutes === 0 && seconds === 0) {
     result.innerHTML = "<h2>Game Over! You Lost</h2>";
     stopGame();
+    lostGame();
     return;
   } else {
     if (seconds === 0) {
@@ -193,6 +257,7 @@ const matrixGenerator = (cardValues, rows = 6, cols = 12) => {
   cards = document.querySelectorAll(".card-container");
   cards.forEach((card) => {
     card.addEventListener("click", () => {
+      clickSound();
       // If selected card is already matched or flipped, do nothing
       if (
         card.classList.contains("matched") ||
@@ -229,6 +294,7 @@ const matrixGenerator = (cardValues, rows = 6, cols = 12) => {
               result.innerHTML = `<h2>You Won</h2>
             <h4>Moves: ${movesCount}</h4>`;
               stopGame();
+              playWinSound();
             }
             playMatchSound();
           } else {
@@ -252,7 +318,7 @@ const matrixGenerator = (cardValues, rows = 6, cols = 12) => {
 startButton.addEventListener("click", () => {
   movesCount = 0;
   seconds = 59;
-  minutes = 4;
+  minutes = 9;
   //controls amd buttons visibility
   controls.classList.add("hide");
   stopButton.classList.remove("hide");
@@ -264,6 +330,8 @@ startButton.addEventListener("click", () => {
   initializer();
 });
 
+muteButton.addEventListener("click", toggleMute);
+
 //Stop game
 stopButton.addEventListener(
   "click",
@@ -271,6 +339,7 @@ stopButton.addEventListener(
     controls.classList.remove("hide");
     stopButton.classList.add("hide");
     startButton.classList.remove("hide");
+    stopMusic();
     clearInterval(interval);
   })
 );
@@ -284,58 +353,71 @@ const initializer = () => {
   matrixGenerator(cardValues);
 };
 
-muteButton.addEventListener("click", toggleMute);
+let myDocument = document.documentElement;
+let btn = document.getElementById("btn");
 
-// cards.forEach((card) => {
-//   card.addEventListener("click", () => {
-//     // If selected card is already matched or flipped, do nothing
-//     if (
-//       card.classList.contains("matched") ||
-//       card.classList.contains("flipped")
-//     ) {
-//       return;
-//     }
+btn.addEventListener("click", () => {
+  if (
+    document.fullscreenElement ||
+    document.webkitFullscreenElement ||
+    document.mozFullScreenElement ||
+    document.msFullscreenElement
+  ) {
+    exitFullscreen();
+  } else {
+    requestFullscreen();
+  }
+});
 
-//     //flip the clicked card
-//     card.classList.add("flipped");
+function requestFullscreen() {
+  if (myDocument.requestFullscreen) {
+    myDocument.requestFullscreen();
+  } else if (myDocument.msRequestFullscreen) {
+    myDocument.msRequestFullscreen();
+  } else if (myDocument.mozRequestFullscreen) {
+    myDocument.mozRequestFullscreen();
+  } else if (myDocument.webkitRequestFullscreen) {
+    myDocument.webkitRequestFullscreen();
+  }
+}
 
-//     //if it is the first card (!firstCard since firstCard is initially false)
-//     if (!firstCard) {
-//       //so the current card will become firstCard
-//       firstCard = card;
-//       //current card's value becomes firstCardValue
-//       firstCardValue = card.getAttribute("data-card-value");
-//     } else {
-//       //increment moves since the user selected the second card
-//       movesCounter();
-//       //secondCard and value
-//       secondCard = card;
-//       let secondCardValue = card.getAttribute("data-card-value");
-//       if (firstCardValue == secondCardValue) {
-//         //if both cards match, add matched class so these cards would be ignored next time
-//         firstCard.classList.add("matched");
-//         secondCard.classList.add("matched");
-//         //set firstCard to false since the next card would be the first now
-//         firstCard = false;
-//         //winCount increment as the user found a correct match
-//         winCount += 1;
-//         //check if winCount == half of cardValues
-//         if (winCount == Math.floor(cardValues.length / 2)) {
-//           result.innerHTML = `<h2>You Won</h2>
-//                     <h4>Moves: ${movesCount}</h4>`;
-//           stopGame();
-//         }
-//       } else {
-//         //if the cards don't match
-//         //flip the cards back to normal after a delay
-//         setTimeout(() => {
-//           firstCard.classList.remove("flipped");
-//           secondCard.classList.remove("flipped");
-//         }, 900);
-//         //reset firstCard and secondCard
-//         firstCard = false;
-//         secondCard = false;
-//       }
-//     }
-//   });
-// });
+function exitFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.msExitFullscreen) {
+    document.msExitFullscreen();
+  } else if (document.mozCancelFullScreen) {
+    document.mozCancelFullScreen();
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  }
+}
+
+document.addEventListener("fullscreenchange", () => {
+  toggleButton();
+});
+
+document.addEventListener("webkitfullscreenchange", () => {
+  toggleButton();
+});
+
+document.addEventListener("mozfullscreenchange", () => {
+  toggleButton();
+});
+
+document.addEventListener("MSFullscreenChange", () => {
+  toggleButton();
+});
+
+function toggleButton() {
+  if (
+    document.fullscreenElement ||
+    document.webkitFullscreenElement ||
+    document.mozFullScreenElement ||
+    document.msFullscreenElement
+  ) {
+    btn.innerHTML = '<img src="./icons/exitFullScreen.png">';
+  } else {
+    btn.innerHTML = '<img src="./icons/fullScreen.png">';
+  }
+}
