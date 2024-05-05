@@ -44,17 +44,14 @@ body {
 }
 
 .game-container {
-  position: fixed; /* Change to fixed */
-  top: 0; /* Set to top of the viewport */
-  left: 0; /* Set to left of the viewport */
-  width: 100%; /* Occupy full width of the viewport */
-  height: 100vh; /* Set height to 100% of viewport height */
+  position: relative;
+  width: 100%;
   display: grid;
   gap: 0.4em;
+  /* Ensure the content doesn't overflow */
   overflow: auto;
   cursor: url("./icons/cursor32.png"), auto;
 }
-
 
 .stats-container {
   display: flex;
