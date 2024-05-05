@@ -26,17 +26,16 @@ body {
   box-sizing: content-box;
   padding: 0.5em 2.5em;
   background-color: whitesmoke;
-  position: fixed;
-  transform: translate(-50%, -50%);
-  left: 50%;
-  top: 50%;
-  border-radius: 1.6em;
+  position: fixed; /* Change to fixed */
+  top: 50%; /* Set to top of the viewport */
+  left: 50%; /* Set to left of the viewport */
+  transform: translate(-50%, -50%); /* Center the element */
+  width: 83%; /* Set width to 90% of the viewport width */
+  max-width: 100%; /* Optionally limit maximum width */
+  height: 100vh; /* Set height to 100% of viewport height */
+  border-radius: 1.3em;
   box-shadow: 0 0.9em 2.8em rgba(86, 66, 0, 0.2);
   background-color: rgba(255, 255, 255, 0.5);
-  /* Let the wrapper grow dynamically based on content */
-  width: fit-content;
-  height: 100vh;
-  max-width: 100%;
   cursor: url("./icons/cursor32.png"), auto;
 
   opacity: 0; /* initially hide the wrapper */
