@@ -95,8 +95,10 @@ body {
 
 .card-container {
   position: relative;
-  width: 6.25em;
-  height: 6.25em;
+  width: 10vw; /* Set width to 10% of the viewport width */
+  height: 10vw; /* Set height to 10% of the viewport width */
+  max-width: 100px; /* Optionally limit maximum width */
+  max-height: 100px; /* Optionally limit maximum height */
   cursor: url("./icons/cursor32.png"), auto;
 }
 
